@@ -4,7 +4,7 @@ BACKUPDIR=$(date +%b-%d-%y)
 ARCHIVEPATH=/media/backup/mailsbackup
 AVPATH=/home/vmail/vmail1/avoornetworks.com
 
-mount UUID=4de4c4a6-c27d-4e85-8021-cc14c59b0a6b ${MOUNTPOINT}
+mount UUID=da02a621-2f12-41ce-9d64-1099d084a210 ${MOUNTPOINT}
 
 if ! [ -e ${MOUNTPOINT}/dummy ]
 then
