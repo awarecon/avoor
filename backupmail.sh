@@ -3,6 +3,7 @@ MOUNTPOINT=/media/backup
 BACKUPDIR=$(date +%b-%d-%y)
 ARCHIVEPATH=/media/backup/mailsbackup
 AVPATH=/home/vmail/vmail1/avoornetworks.com
+SOURCE=/home/shared
 
 mount UUID=da02a621-2f12-41ce-9d64-1099d084a210 ${MOUNTPOINT}
 
@@ -52,4 +53,41 @@ done
 /etc/init.d/crond start
 rsync --stats -av --numeric-ids --delete /etc/ /media/backup/etcbackup/ > /media/backup/etcbackup/etcsync.log
 echo "Monthly backup successfully completed at Avoor Consultants" | mail -s "Avoor backup" support@aware.co.in
+
+
+if [ -d $MOUNTPOINT/backup.5 ]
+then
+        rm -rf $MOUNTPOINT/backup.5
+fi
+
+# now, shift the middle backups
+if [ -d $MOUNTPOINT/backup.4 ]
+then
+        mv $MOUNTPOINT/backup.4 $MOUNTPOINT/backup.5
+fi
+
+if [ -d $MOUNTPOINT/backup.3 ]
+then
+        mv $MOUNTPOINT/backup.3 $MOUNTPOINT/backup.4
+fi
+
+if [ -d $MOUNTPOINT/backup.2 ]
+then
+        mv $MOUNTPOINT/backup.2 $MOUNTPOINT/backup.3
+fi
+
+if [ -d $MOUNTPOINT/backup.1 ]
+then
+        mv $MOUNTPOINT/backup.1 $MOUNTPOINT/backup.2
+fi
+
+
+# make a hard link copy of latest snapshot
+if [ -d $MOUNTPOINT/backup.0 ]
+then
+        cp -al $MOUNTPOINT/backup.0 $MOUNTPOINT/backup.1
+fi
+
+rsync --stats -av --numeric-ids --delete ${SOURCE} ${MOUNTPOINT}/backup.0/ > /var/www/logs/sync-`date +%F`.log
+
 umount ${MOUNTPOINT}
